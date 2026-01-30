@@ -30,7 +30,9 @@ class TradingViewService {
     private sessions: { quote: string; chart: string } = { quote: '', chart: '' };
 
     constructor() {
-        if (typeof window === 'undefined') {
+        // Prevent connection during build phase or on client side
+        const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
+        if (typeof window === 'undefined' && !isBuildPhase) {
             this.connect();
         }
     }
