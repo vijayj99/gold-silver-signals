@@ -13,7 +13,9 @@ interface Signal {
     timestamp: string;
 }
 
-export default function Dashboard() {
+import { Suspense } from 'react';
+
+function DashboardContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [signals, setSignals] = useState<Signal[]>([]);
@@ -327,5 +329,13 @@ export default function Dashboard() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function Dashboard() {
+    return (
+        <Suspense fallback={<div style={{ padding: '5rem', textAlign: 'center', color: 'white' }}>Loading Dashboard...</div>}>
+            <DashboardContent />
+        </Suspense>
     );
 }

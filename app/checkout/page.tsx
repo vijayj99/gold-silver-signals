@@ -17,7 +17,9 @@ const cryptoMethods = [
     { id: 'usdc-bep20', name: 'USDC (BEP20)', network: 'BSC Network', icon: '⚪' },
 ];
 
-export default function CheckoutPage() {
+import { Suspense } from 'react';
+
+function CheckoutContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
@@ -51,70 +53,78 @@ export default function CheckoutPage() {
     };
 
     return (
-        <>
-            <SharedNav />
-            <main className={styles.container}>
-                <div className={styles.checkoutGrid}>
-                    <div className={styles.paymentSection}>
-                        <h1 className={styles.title}>Select Payment Method</h1>
-                        <p className={styles.subtitle}>Choose your preferred cryptocurrency to complete the subscription.</p>
+        <main className={styles.container}>
+            <div className={styles.checkoutGrid}>
+                <div className={styles.paymentSection}>
+                    <h1 className={styles.title}>Select Payment Method</h1>
+                    <p className={styles.subtitle}>Choose your preferred cryptocurrency to complete the subscription.</p>
 
-                        <div className={styles.methodsGrid}>
-                            {cryptoMethods.map((method) => (
-                                <div
-                                    key={method.id}
-                                    className={`${styles.methodCard} glass ${selectedMethod === method.id ? styles.selected : ''}`}
-                                    onClick={() => setSelectedMethod(method.id)}
-                                >
-                                    <span className={styles.cryptoIcon}>{method.icon}</span>
-                                    <div className={styles.methodInfo}>
-                                        <span className={styles.methodName}>{method.name}</span>
-                                        <span className={styles.networkName}>{method.network}</span>
-                                    </div>
-                                    <div className={styles.radio}></div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className={styles.summarySection}>
-                        <div className={`${styles.summaryCard} glass`}>
-                            <h3>Order Summary</h3>
-                            <div className={styles.summaryItem}>
-                                <span>Plan</span>
-                                <strong>{plan}</strong>
-                            </div>
-                            <div className={styles.summaryItem}>
-                                <span>Duration</span>
-                                <span>{plan.includes('Yearly') ? '12 Months' : '1 Month'}</span>
-                            </div>
-                            <div className={styles.divider}></div>
-                            <div className={styles.totalPrice}>
-                                <span>Total to Pay</span>
-                                <span className={styles.amount}>{price}</span>
-                            </div>
-
-                            {selectedMethod && (
-                                <div className={styles.addressBox}>
-                                    <p>Send exactly <strong>{price.replace('$', '')} USD</strong> equivalent to the address below:</p>
-                                    <div className={styles.walletAddress}>
-                                        TNV9...y5Wk (Simulated Address)
-                                    </div>
-                                    <p className={styles.hint}>Payment will be automatically detected in 5-10 mins.</p>
-                                </div>
-                            )}
-
-                            <button
-                                className={`btn btn-primary ${styles.payBtn}`}
-                                disabled={!selectedMethod || isProcessing}
-                                onClick={handlePayment}
+                    <div className={styles.methodsGrid}>
+                        {cryptoMethods.map((method) => (
+                            <div
+                                key={method.id}
+                                className={`${styles.methodCard} glass ${selectedMethod === method.id ? styles.selected : ''}`}
+                                onClick={() => setSelectedMethod(method.id)}
                             >
-                                {isProcessing ? 'Verifying Transaction...' : 'Confirm Payment'}
-                            </button>
-                        </div>
+                                <span className={styles.cryptoIcon}>{method.icon}</span>
+                                <div className={styles.methodInfo}>
+                                    <span className={styles.methodName}>{method.name}</span>
+                                    <span className={styles.networkName}>{method.network}</span>
+                                </div>
+                                <div className={styles.radio}></div>
+                            </div>
+                        ))}
                     </div>
                 </div>
-            </main>
+
+                <div className={styles.summarySection}>
+                    <div className={`${styles.summaryCard} glass`}>
+                        <h3>Order Summary</h3>
+                        <div className={styles.summaryItem}>
+                            <span>Plan</span>
+                            <strong>{plan}</strong>
+                        </div>
+                        <div className={styles.summaryItem}>
+                            <span>Duration</span>
+                            <span>{plan.includes('Yearly') ? '12 Months' : '1 Month'}</span>
+                        </div>
+                        <div className={styles.divider}></div>
+                        <div className={styles.totalPrice}>
+                            <span>Total to Pay</span>
+                            <span className={styles.amount}>{price}</span>
+                        </div>
+
+                        {selectedMethod && (
+                            <div className={styles.addressBox}>
+                                <p>Send exactly <strong>{price.replace('$', '')} USD</strong> equivalent to the address below:</p>
+                                <div className={styles.walletAddress}>
+                                    TNV9...y5Wk (Simulated Address)
+                                </div>
+                                <p className={styles.hint}>Payment will be automatically detected in 5-10 mins.</p>
+                            </div>
+                        )}
+
+                        <button
+                            className={`btn btn-primary ${styles.payBtn}`}
+                            disabled={!selectedMethod || isProcessing}
+                            onClick={handlePayment}
+                        >
+                            {isProcessing ? 'Verifying Transaction...' : 'Confirm Payment'}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    );
+}
+
+export default function CheckoutPage() {
+    return (
+        <>
+            <SharedNav />
+            <Suspense fallback={<div style={{ padding: '5rem', textAlign: 'center', color: 'white' }}>Loading Checkout...</div>}>
+                <CheckoutContent />
+            </Suspense>
             <SharedFooter />
         </>
     );
