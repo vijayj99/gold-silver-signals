@@ -1,0 +1,190 @@
+.container {
+    min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 120px 2rem 80px;
+}
+
+.checkoutGrid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 3rem;
+    align-items: start;
+}
+
+.title {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+}
+
+.methodsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.methodCard {
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.methodCard:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.selected {
+    border-color: var(--primary) !important;
+    background: rgba(212, 175, 55, 0.05) !important;
+}
+
+.cryptoIcon {
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+}
+
+.methodInfo {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.methodName {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.networkName {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    position: relative;
+}
+
+.selected .radio {
+    border-color: var(--primary);
+}
+
+.selected .radio::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: var(--primary);
+    border-radius: 50%;
+}
+
+.summaryCard {
+    padding: 2.5rem;
+    position: sticky;
+    top: 120px;
+}
+
+.summaryCard h3 {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.summaryItem {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    color: var(--text-muted);
+}
+
+.summaryItem strong {
+    color: white;
+}
+
+.totalPrice {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.amount {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.addressBox {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    border: 1px dashed var(--primary);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.addressBox p {
+    margin-bottom: 1rem;
+}
+
+.walletAddress {
+    background: #000;
+    padding: 1rem;
+    border-radius: 10px;
+    word-break: break-all;
+    font-family: monospace;
+    font-size: 1rem;
+    color: var(--primary);
+    letter-spacing: 1px;
+}
+
+.hint {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.payBtn {
+    width: 100%;
+    margin-top: 2rem;
+    padding: 1.25rem;
+}
+
+@media (max-width: 1024px) {
+    .checkoutGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .summarySection {
+        order: -1;
+    }
+
+    .summaryCard {
+        position: static;
+    }
+}

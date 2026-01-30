@@ -1,0 +1,526 @@
+.container {
+    padding: 120px 2rem 50px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboardNav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: rgba(10, 10, 11, 0.95);
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4rem;
+    z-index: 1000;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.goldText {
+    color: var(--primary);
+}
+
+.navRight {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.supportLink {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.supportLink:hover {
+    border-color: var(--primary);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.userProfile {
+    position: relative;
+    cursor: pointer;
+}
+
+.avatar {
+    width: 45px;
+    height: 45px;
+    background: var(--primary);
+    color: #000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+}
+
+.profileDropdown {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 250px;
+    padding: 1.5rem;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    border: 1px solid var(--border);
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.userInfo strong {
+    font-size: 1.1rem;
+}
+
+.userInfo span {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.planStatus {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.active {
+    color: var(--success);
+    font-weight: 700;
+}
+
+.inactive {
+    color: var(--danger);
+    font-weight: 700;
+}
+
+.logoutBtn {
+    background: rgba(255, 77, 77, 0.1);
+    color: var(--danger);
+    border: none;
+    padding: 0.75rem;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.logoutBtn:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 1rem;
+}
+
+.modalContent {
+    width: 100%;
+    max-width: 500px;
+    padding: 2.5rem;
+    border-radius: 24px;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.closeBtn {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.supportForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.formGroup label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.formGroup input,
+.formGroup textarea {
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: white;
+    font-family: inherit;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.livePrices {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.priceCard {
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 180px;
+}
+
+.priceValue {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.signalsSection {
+    margin-bottom: 4rem;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.badge {
+    background: var(--danger);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.signalsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.signalCard {
+    padding: 2rem;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.signalTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.symbol {
+    font-weight: 800;
+    font-size: 1.25rem;
+}
+
+.type {
+    font-weight: 700;
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.buy {
+    background: rgba(0, 255, 136, 0.1);
+    color: var(--success);
+}
+
+.sell {
+    background: rgba(255, 77, 77, 0.1);
+    color: var(--danger);
+}
+
+.signalPrice {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.signalTargets {
+    display: flex;
+    gap: 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.tp {
+    color: var(--success);
+}
+
+.sl {
+    color: var(--danger);
+}
+
+.signalReason {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.analyticsSection {
+    margin-bottom: 3rem;
+}
+
+.analyticsGrid {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 2.5rem;
+    text-align: center;
+}
+
+.analyticItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.analyticLabel {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.analyticValue {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.profit {
+    color: var(--success);
+}
+
+.countdown {
+    color: var(--primary) !important;
+    font-family: monospace;
+    font-size: 1.8rem !important;
+}
+
+.analyticSub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.divider {
+    width: 1px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 2rem;
+}
+
+.accuracyCircle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.signalTime {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: auto;
+}
+
+.telegramCTA {
+    margin-top: 3rem;
+}
+
+.telegramContent {
+    padding: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    background: rgba(212, 175, 55, 0.05) !important;
+    border: 1px solid rgba(212, 175, 55, 0.2) !important;
+}
+
+.telegramIcon {
+    font-size: 3.5rem;
+    background: rgba(212, 175, 55, 0.1);
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+}
+
+.telegramText {
+    flex: 1;
+    text-align: left;
+}
+
+.telegramText h3 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.telegramText p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+.upgradeGroup {
+    display: flex;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .telegramContent {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+    }
+
+    .telegramText {
+        text-align: center;
+    }
+}
+
+.loading,
+.empty {
+    text-align: center;
+    padding: 4rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2rem;
+    }
+
+    .livePrices {
+        width: 100%;
+    }
+
+    .priceCard {
+        flex: 1;
+    }
+}
+
+.paywallOverlay {
+    position: relative;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 24px;
+    overflow: hidden;
+    margin-top: 2rem;
+}
+
+.paywallContent {
+    position: absolute;
+    z-index: 10;
+    text-align: center;
+    padding: 4rem 2rem;
+    max-width: 500px;
+}
+
+.lockIcon {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.paywallContent h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.paywallContent p {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.blurredGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+    filter: blur(15px);
+    opacity: 0.3;
+    pointer-events: none;
+}
