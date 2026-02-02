@@ -47,16 +47,6 @@
       "symbol": "XAUUSD",
       "type": "BUY",
       "price": 5009.95,
-      "time": "10:46:29 pm",
-      "reason": "TEST SIGNAL: Liquidity grab simulation (FORCED)",
-      "tp": 5059.95,
-      "sl": 4989.95,
-      "timestamp": "2026-01-30T17:16:29.438Z"
-    },
-    {
-      "symbol": "XAUUSD",
-      "type": "BUY",
-      "price": 5009.95,
       "time": "11:53:38 pm",
       "reason": "TEST SIGNAL: Liquidity grab simulation (FORCED)",
       "tp": 5059.95,
@@ -102,7 +92,17 @@
       "tp": 2010.5,
       "sl": 2049.5,
       "timestamp": "2026-01-30T19:19:47.784Z"
+    },
+    {
+      "symbol": "XAUUSD",
+      "type": "SELL",
+      "price": 2039.5,
+      "time": "1:02:52 pm",
+      "reason": "DIAGNOSTIC SIGNAL: Testing Telegram connectivity (FORCED)",
+      "tp": 2010.5,
+      "sl": 2049.5,
+      "timestamp": "2026-02-02T07:32:56.798Z"
     }
   ],
-  "monthlyProfit": 5458
+  "monthlyProfit": 5578.75
 }

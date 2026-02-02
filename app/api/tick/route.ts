@@ -3,6 +3,8 @@ import { StrategyEngine } from '@/lib/strategy';
 import { TelegramService } from '@/lib/telegram';
 import { getDb, saveDb } from '@/lib/db-mock';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: any) {
     const { searchParams } = new URL(req.url);
     const force = searchParams.get('force') === 'true';

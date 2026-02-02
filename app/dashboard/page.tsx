@@ -55,7 +55,7 @@ function DashboardContent() {
 
         const fetchSignals = async () => {
             try {
-                const res = await fetch('/api/signals');
+                const res = await fetch(`/api/signals?t=${Date.now()}`);
                 const data = await res.json();
                 setSignals(data.signals || []);
                 if (data.monthlyProfit) setMonthlyProfit(data.monthlyProfit);
@@ -66,7 +66,7 @@ function DashboardContent() {
 
         const fetchPrices = async () => {
             try {
-                const res = await fetch('/api/prices');
+                const res = await fetch(`/api/prices?t=${Date.now()}`);
                 const data = await res.json();
                 setPrices({
                     XAUUSD: data.XAUUSD,
