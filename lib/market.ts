@@ -37,27 +37,36 @@ export class MarketService {
             return { symbol, price: tvPrice, timestamp: new Date(), source: 'TradingView' };
         }
 
-        // 2. Try Free Forex API (SPOT XAUUSD - No API Key Required!)
+        // 2. Try Goldapi.io (Free: 50 req/month, LIVE SPOT)
         try {
             if (symbol === 'XAUUSD') {
-                const res = await fetch(
-                    `https://www.freeforexapi.com/api/live?pairs=XAUUSD`,
-                    {
-                        next: { revalidate: 0 },
-                        signal: AbortSignal.timeout(5000)
-                    }
-                );
+                const res = await fetch('https://www.goldapi.io/api/XAU/USD', {
+                    next: { revalidate: 0 },
+                    signal: AbortSignal.timeout(5000),
+                    headers: { 'x-access-token': 'goldapi-bki7u4lqcwi9xnj-io' }
+                });
                 const data = await res.json();
-
-                if (data?.rates?.XAUUSD?.rate) {
-                    const price = data.rates.XAUUSD.rate;
-                    console.log(`✅ [Market] ${symbol} from FreeForexAPI (SPOT): $${price}`);
-                    return { symbol, price, timestamp: new Date(), source: 'FreeForexAPI' };
+                if (data?.price && !data.error) {
+                    console.log(`✅ [LIVE] ${symbol} from Goldapi.io: $${data.price}`);
+                    return { symbol, price: data.price, timestamp: new Date(), source: 'Goldapi' };
                 }
             }
-        } catch (e) {
-            console.error(`❌ FreeForexAPI failed for ${symbol}:`, e);
-        }
+        } catch (e) { console.error(`❌ Goldapi failed:`, e); }
+
+        // 3. Try CurrencyAPI (Free: 300 req/month)
+        try {
+            if (symbol === 'XAUUSD') {
+                const res = await fetch('https://api.currencyapi.com/v3/latest?apikey=cur_live_HS9TnqAxdm6x6rUDQhCrUF3kKmPn9aDKOZEGOwje&base_currency=XAU&currencies=USD', {
+                    next: { revalidate: 0 },
+                    signal: AbortSignal.timeout(5000)
+                });
+                const data = await res.json();
+                if (data?.data?.USD?.value) {
+                    console.log(`✅ [LIVE] ${symbol} from CurrencyAPI: $${data.data.USD.value}`);
+                    return { symbol, price: data.data.USD.value, timestamp: new Date(), source: 'CurrencyAPI' };
+                }
+            }
+        } catch (e) { console.error(`❌ Currency API failed:`, e); }
 
         // 3. Try Twelve Data API (Backup)
         try {
