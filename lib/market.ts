@@ -30,8 +30,6 @@ export class MarketService {
      * Fetches the latest price with prioritized sources
      */
     static async getLatestPrice(symbol: string) {
-        const apiKey = process.env.TWELVE_DATA_API_KEY || API_KEY;
-
         // 1. Try TradingView WebSocket first (most accurate spot prices, matches OANDA)
         const tvPrice = TVService.getPrice(symbol);
         if (tvPrice > 0) {
@@ -39,8 +37,38 @@ export class MarketService {
             return { symbol, price: tvPrice, timestamp: new Date(), source: 'TradingView' };
         }
 
-        // 2. Try Twelve Data (Spot XAU/USD - should match TradingView)
+        // 2. Try Yahoo Finance API (Free, No API Key Required!)
         try {
+            // Yahoo Finance uses different symbols:
+            // Gold: GC=F (Gold Futures) or use direct conversion from XAU
+            // Silver: SI=F (Silver Futures) or use direct conversion from XAG
+            const yahooSymbol = symbol === 'XAUUSD' ? 'GC=F' : 'SI=F';
+
+            const res = await fetch(
+                `https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?interval=1m&range=1d`,
+                {
+                    next: { revalidate: 0 },
+                    signal: AbortSignal.timeout(5000),
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                    }
+                }
+            );
+
+            const data = await res.json();
+
+            if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
+                const price = data.chart.result[0].meta.regularMarketPrice;
+                console.log(`✅ [Market] ${symbol} from Yahoo Finance: $${price}`);
+                return { symbol, price, timestamp: new Date(), source: 'Yahoo Finance' };
+            }
+        } catch (e) {
+            console.error(`❌ Yahoo Finance API failed for ${symbol}:`, e);
+        }
+
+        // 3. Try Twelve Data API (Backup)
+        try {
+            const apiKey = process.env.TWELVE_DATA_API_KEY || API_KEY;
             const isGold = symbol === 'XAUUSD';
             const apiSymbol = isGold ? 'XAU/USD' : 'XAG/USD';
 
@@ -66,14 +94,15 @@ export class MarketService {
                     return { symbol, price, timestamp: new Date(), source: 'TwelveData_SLV' };
                 }
             }
-        } catch (e) { }
+        } catch (e) {
+            console.error(`❌ TwelveData API failed for ${symbol}:`, e);
+        }
 
-        // 3. Last resort: Use realistic fallback based on TradingView levels
-
-        const basePrice = symbol === 'XAUUSD' ? 4920.00 : 75.45;
+        // 4. Last resort: Use updated fallback based on current market levels
+        const basePrice = symbol === 'XAUUSD' ? 4973.00 : 58.45;
         const randomVolatility = (Math.random() - 0.5) * 1.5;
         const price = basePrice + randomVolatility;
-        console.warn(`[Market] ${symbol} using FALLBACK MOCK: ${price}`);
+        console.warn(`⚠️ [Market] ${symbol} using FALLBACK MOCK: ${price}`);
         return {
             symbol,
             price,
