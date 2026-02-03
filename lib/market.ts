@@ -33,8 +33,37 @@ export class MarketService {
         // 1. Try TradingView WebSocket first (most accurate spot prices, matches OANDA)
         const tvPrice = TVService.getPrice(symbol);
         if (tvPrice > 0) {
-            console.log(`[Market] ${symbol} from TradingView: ${tvPrice}`);
+            console.log(`✅ [Market] ${symbol} from TradingView WebSocket: $${tvPrice}`);
             return { symbol, price: tvPrice, timestamp: new Date(), source: 'TradingView' };
+        }
+
+        // 2. Try Investing.com (Web scraping - MOST RELIABLE, matches TradingView exactly)
+        try {
+            if (symbol === 'XAUUSD') {
+                // Investing.com provides JSON data for charts
+                const res = await fetch(
+                    'https://www.investing.com/instruments/Service/GetChartData',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: 'pairID=8830&period=300&viewType=line',
+                        next: { revalidate: 0 },
+                        signal: AbortSignal.timeout(5000)
+                    }
+                );
+                const data = await res.json();
+                if (data?.last_close || data?.close) {
+                    const price = parseFloat(data.last_close || data.close);
+                    console.log(`✅ [LIVE SCRAPE] ${symbol} from Investing.com: $${price}`);
+                    return { symbol, price, timestamp: new Date(), source: 'Investing.com' };
+                }
+            }
+        } catch (e) {
+            console.error(`❌ Investing.com scrape failed:`, e);
         }
 
         // 2. Try Goldapi.io (Free: 50 req/month, LIVE SPOT)
