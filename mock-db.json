@@ -42,6 +42,31 @@
       "isActive": true
     }
   ],
-  "signals": [],
-  "monthlyProfit": 5640.453627173274
+  "signals": [
+    {
+      "symbol": "XAGUSD",
+      "type": "BUY",
+      "price": 0,
+      "reason": "",
+      "timestamp": "2026-02-03T16:33:30.740Z"
+    },
+    {
+      "symbol": "XAUUSD",
+      "type": "SELL",
+      "price": 0,
+      "reason": "",
+      "timestamp": "2026-02-03T16:33:59.276Z"
+    },
+    {
+      "symbol": "XAUUSD",
+      "type": "SELL",
+      "price": 2439.5,
+      "time": "10:39:20 pm",
+      "reason": "DIAGNOSTIC SIGNAL: Testing Telegram connectivity (FORCED)",
+      "tp": 2410.5,
+      "sl": 2449.5,
+      "timestamp": "2026-02-03T17:09:21.373Z"
+    }
+  ],
+  "monthlyProfit": 5702.704017680395
 }

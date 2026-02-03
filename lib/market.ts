@@ -1,5 +1,6 @@
 // lib/market.ts
 import { TVService } from './tradingview';
+import { MT5Service } from './mt5-api';
 
 export interface Candle {
     symbol: string;
@@ -65,7 +66,18 @@ export class MarketService {
      * Fetches the latest price with prioritized sources
      */
     static async getLatestPrice(symbol: string) {
-        // 1. Try TradingView WebSocket first (most accurate spot prices, matches OANDA)
+        // 1. Try MT5 (User's Orontrade account - BEST source!)
+        try {
+            const mt5Data = await MT5Service.getPrice(symbol);
+            if (mt5Data && mt5Data.price > 0) {
+                console.log(`✅ [MT5] ${symbol} from Orontrade: $${mt5Data.price}`);
+                return { symbol, price: mt5Data.price, timestamp: new Date(), source: 'MT5' };
+            }
+        } catch (e) {
+            console.error(`❌ MT5 failed for ${symbol}:`, e);
+        }
+
+        // 2. Try TradingView WebSocket (most accurate spot prices, matches OANDA)
         const tvPrice = TVService.getPrice(symbol);
         if (tvPrice > 0) {
             console.log(`✅ [Market] ${symbol} from TradingView WebSocket: $${tvPrice}`);
