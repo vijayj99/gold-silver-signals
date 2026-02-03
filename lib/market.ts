@@ -15,6 +15,41 @@ const API_KEY = '60ad6cc7658d4f4f9c879f89c98be263';
 
 export class MarketService {
     /**
+     * Calculate RSI (Relative Strength Index)
+     */
+    private static calculateRSI(closes: number[], period: number = 14): number[] {
+        const rsis: number[] = [];
+        if (closes.length < period + 1) {
+            return closes.map(() => 50); // Default RSI
+        }
+
+        for (let i = 0; i < closes.length; i++) {
+            if (i < period) {
+                rsis.push(50); // Not enough data
+                continue;
+            }
+
+            const slice = closes.slice(i - period, i + 1);
+            let gains = 0;
+            let losses = 0;
+
+            for (let j = 1; j < slice.length; j++) {
+                const change = slice[j] - slice[j - 1];
+                if (change > 0) gains += change;
+                else losses += Math.abs(change);
+            }
+
+            const avgGain = gains / period;
+            const avgLoss = losses / period;
+            const rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
+            const rsi = 100 - (100 / (1 + rs));
+            rsis.push(rsi);
+        }
+
+        return rsis;
+    }
+
+    /**
      * Fetches multiple prices in a single API call for efficiency (Rate limit optimization)
      */
     static async getPricesBatch(symbols: string[]): Promise<Record<string, number>> {
@@ -150,13 +185,16 @@ export class MarketService {
         // 1. Try TradingView
         const tvCandles = TVService.getCandles(symbol);
         if (tvCandles && tvCandles.length > 5) {
-            return tvCandles.slice(-limit).map(c => ({
+            const closes = tvCandles.map(c => c.close);
+            const rsiValues = this.calculateRSI(closes);
+
+            return tvCandles.slice(-limit).map((c, i) => ({
                 symbol,
                 open: c.open,
                 high: c.high,
                 low: c.low,
                 close: c.close,
-                rsi: 50,
+                rsi: rsiValues[tvCandles.length - limit + i] || 50,
                 timestamp: new Date(c.time * 1000)
             }));
         }
@@ -168,15 +206,19 @@ export class MarketService {
             const data = await res.json();
 
             if (data.values && data.values.length > 0) {
-                return data.values.map((v: any) => ({
+                const reversed = data.values.reverse();
+                const closes = reversed.map((v: any) => parseFloat(v.close));
+                const rsiValues = this.calculateRSI(closes);
+
+                return reversed.map((v: any, i: number) => ({
                     symbol,
                     open: parseFloat(v.open),
                     high: parseFloat(v.high),
                     low: parseFloat(v.low),
                     close: parseFloat(v.close),
-                    rsi: 50 + (Math.random() - 0.5) * 10,
+                    rsi: rsiValues[i] || 50,
                     timestamp: new Date(v.datetime)
-                })).reverse();
+                }));
             }
         } catch (e) {
             console.error('API Candles Error:', e);
