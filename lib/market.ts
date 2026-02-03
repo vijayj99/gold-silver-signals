@@ -93,7 +93,7 @@ export class MarketService {
 
         // 4. Last resort: Use updated fallback based on current market levels
         // NOTE: Update this periodically to match current market price
-        const basePrice = symbol === 'XAUUSD' ? 4992.00 : 58.45;
+        const basePrice = symbol === 'XAUUSD' ? 4972.00 : 58.45;
         const randomVolatility = (Math.random() - 0.5) * 1.5;
         const price = basePrice + randomVolatility;
         console.warn(`⚠️ [Market] ${symbol} using FALLBACK MOCK: ${price}`);
