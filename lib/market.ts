@@ -37,33 +37,26 @@ export class MarketService {
             return { symbol, price: tvPrice, timestamp: new Date(), source: 'TradingView' };
         }
 
-        // 2. Try Yahoo Finance API (Free, No API Key Required!)
+        // 2. Try Free Forex API (SPOT XAUUSD - No API Key Required!)
         try {
-            // Yahoo Finance uses different symbols:
-            // Gold: GC=F (Gold Futures) or use direct conversion from XAU
-            // Silver: SI=F (Silver Futures) or use direct conversion from XAG
-            const yahooSymbol = symbol === 'XAUUSD' ? 'GC=F' : 'SI=F';
-
-            const res = await fetch(
-                `https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?interval=1m&range=1d`,
-                {
-                    next: { revalidate: 0 },
-                    signal: AbortSignal.timeout(5000),
-                    headers: {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            if (symbol === 'XAUUSD') {
+                const res = await fetch(
+                    `https://www.freeforexapi.com/api/live?pairs=XAUUSD`,
+                    {
+                        next: { revalidate: 0 },
+                        signal: AbortSignal.timeout(5000)
                     }
+                );
+                const data = await res.json();
+
+                if (data?.rates?.XAUUSD?.rate) {
+                    const price = data.rates.XAUUSD.rate;
+                    console.log(`✅ [Market] ${symbol} from FreeForexAPI (SPOT): $${price}`);
+                    return { symbol, price, timestamp: new Date(), source: 'FreeForexAPI' };
                 }
-            );
-
-            const data = await res.json();
-
-            if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
-                const price = data.chart.result[0].meta.regularMarketPrice;
-                console.log(`✅ [Market] ${symbol} from Yahoo Finance: $${price}`);
-                return { symbol, price, timestamp: new Date(), source: 'Yahoo Finance' };
             }
         } catch (e) {
-            console.error(`❌ Yahoo Finance API failed for ${symbol}:`, e);
+            console.error(`❌ FreeForexAPI failed for ${symbol}:`, e);
         }
 
         // 3. Try Twelve Data API (Backup)
@@ -99,7 +92,7 @@ export class MarketService {
         }
 
         // 4. Last resort: Use updated fallback based on current market levels
-        const basePrice = symbol === 'XAUUSD' ? 4973.00 : 58.45;
+        const basePrice = symbol === 'XAUUSD' ? 4976.00 : 58.45;
         const randomVolatility = (Math.random() - 0.5) * 1.5;
         const price = basePrice + randomVolatility;
         console.warn(`⚠️ [Market] ${symbol} using FALLBACK MOCK: ${price}`);
