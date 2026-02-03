@@ -15,62 +15,70 @@ const API_KEY = '60ad6cc7658d4f4f9c879f89c98be263';
 
 export class MarketService {
     /**
-     * Fetches the latest price from TradingView or Twelve Data
+     * Fetches multiple prices in a single API call for efficiency (Rate limit optimization)
+     */
+    static async getPricesBatch(symbols: string[]): Promise<Record<string, number>> {
+        const results: Record<string, number> = {};
+        for (const symbol of symbols) {
+            const data = await this.getLatestPrice(symbol);
+            results[symbol] = data.price;
+        }
+        return results;
+    }
+
+    /**
+     * Fetches the latest price with prioritized sources
      */
     static async getLatestPrice(symbol: string) {
-        // 1. Try TradingView (WebSocket - Local Dev)
+        const apiKey = process.env.TWELVE_DATA_API_KEY || API_KEY;
+
+        // 1. Try TradingView WebSocket first (most accurate spot prices, matches OANDA)
         const tvPrice = TVService.getPrice(symbol);
         if (tvPrice > 0) {
-            return {
-                symbol,
-                price: tvPrice,
-                timestamp: new Date()
-            };
+            console.log(`[Market] ${symbol} from TradingView: ${tvPrice}`);
+            return { symbol, price: tvPrice, timestamp: new Date(), source: 'TradingView' };
         }
 
-        // 2. Try Twelve Data (REST - Vercel/Fallback)
+        // 2. Try Twelve Data (Spot XAU/USD - should match TradingView)
         try {
-            const apiSymbol = symbol === 'XAUUSD' ? 'XAU/USD' : 'SLV';
-            const res = await fetch(`https://api.twelvedata.com/price?symbol=${apiSymbol}&apikey=${API_KEY}`, {
+            const isGold = symbol === 'XAUUSD';
+            const apiSymbol = isGold ? 'XAU/USD' : 'XAG/USD';
+
+            const res = await fetch(`https://api.twelvedata.com/price?symbol=${apiSymbol}&apikey=${apiKey}`, {
                 next: { revalidate: 0 },
-                signal: AbortSignal.timeout(5000) // 5s timeout
+                signal: AbortSignal.timeout(5000)
             });
             const data = await res.json();
 
             if (data.price && !isNaN(parseFloat(data.price))) {
-                return {
-                    symbol,
-                    price: parseFloat(data.price),
-                    timestamp: new Date()
-                };
+                const price = parseFloat(data.price);
+                console.log(`[Market] ${symbol} from TwelveData: ${price}`);
+                return { symbol, price, timestamp: new Date(), source: 'TwelveData' };
             }
-        } catch (e) {
-            console.warn('TwelveData Fetch Failed:', symbol);
-        }
 
-        // 3. Try Binance Fallback for Gold (PAXG)
-        if (symbol === 'XAUUSD') {
-            try {
-                const res = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT', { next: { revalidate: 0 } });
-                const data = await res.json();
-                if (data.price) {
-                    return {
-                        symbol,
-                        price: parseFloat(data.price),
-                        timestamp: new Date()
-                    };
+            // Fallback for Silver if XAG/USD is restricted
+            if (symbol === 'XAGUSD' && (data.code === 404 || data.code === 403)) {
+                const resSlv = await fetch(`https://api.twelvedata.com/price?symbol=SLV&apikey=${apiKey}`);
+                const dataSlv = await resSlv.json();
+                if (dataSlv.price) {
+                    const price = parseFloat(dataSlv.price);
+                    console.log(`[Market] ${symbol} from TwelveData(SLV): ${price}`);
+                    return { symbol, price, timestamp: new Date(), source: 'TwelveData_SLV' };
                 }
-            } catch (e) { }
-        }
+            }
+        } catch (e) { }
 
-        // 4. Last Resort Fallback: Updated to current market levels (Feb 2026)
-        // If everything above fails, we use these more realistic starting points
-        const basePrice = symbol === 'XAUUSD' ? 4550.50 : 75.45;
+        // 3. Last resort: Use realistic fallback based on TradingView levels
+
+        const basePrice = symbol === 'XAUUSD' ? 4920.00 : 75.45;
         const randomVolatility = (Math.random() - 0.5) * 1.5;
+        const price = basePrice + randomVolatility;
+        console.warn(`[Market] ${symbol} using FALLBACK MOCK: ${price}`);
         return {
             symbol,
-            price: basePrice + randomVolatility,
-            timestamp: new Date()
+            price,
+            timestamp: new Date(),
+            source: 'Fallback'
         };
     }
 

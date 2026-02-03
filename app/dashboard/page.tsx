@@ -85,7 +85,7 @@ function DashboardContent() {
         initialLoad();
 
         const signalsInterval = setInterval(fetchSignals, 15000);
-        const pricesInterval = setInterval(fetchPrices, 3000);
+        const pricesInterval = setInterval(fetchPrices, 10000); // 10s interval to stay within 8 req/min limit
 
         // Countdown Timer Logic
         const timerInterval = setInterval(() => {
@@ -266,6 +266,8 @@ function DashboardContent() {
                 )}
             </section>
 
+
+
             <section className={styles.telegramCTA}>
                 <div className={`${styles.telegramContent} glass`}>
                     <div className={styles.telegramIcon}>📡</div>
@@ -278,7 +280,7 @@ function DashboardContent() {
                         )}
                     </div>
                     {(userPlan === 'Gold Yearly' || userPlan === 'Silver Monthly') ? (
-                        <button className="btn btn-primary" onClick={() => window.open('https://t.me/your_bot_link', '_blank')}>
+                        <button className="btn btn-primary" onClick={() => window.open('https://t.me/+R75fi_Vy2_Y1ZDg1', '_blank')}>
                             Open Telegram Bot
                         </button>
                     ) : (
