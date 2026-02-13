@@ -168,7 +168,7 @@ function DashboardContent() {
             <header className={styles.header}>
                 <div className={styles.headerTitle}>
                     <h1>Market Dashboard</h1>
-                    <p>Welcome back, Vijay Savani</p>
+                    <p>Welcome back, Vijay Savani <span style={{ fontSize: '0.7rem', opacity: 0.5 }}>(v2.1-StrongMix)</span></p>
                 </div>
             </header>
 
