@@ -23,9 +23,10 @@ ${emoji} *VIP SIGNAL (GOLD YEARLY)* ${emoji}
 *Price:* $${signal.price.toFixed(2)}
 *Time:* ${signal.time}
 
-🎯 *TP:* $${(signal as any).tp?.toFixed(2) || 'N/A'}
+🎯 *TP 1 (Partial):* $${(signal as any).tp1?.toFixed(2) || 'N/A'}
+🎯 *TP 2 (Final):* $${(signal as any).tp?.toFixed(2) || 'N/A'}
 🛑 *SL:* $${(signal as any).sl?.toFixed(2) || 'N/A'}
-📊 *RR:* 1:3
+📊 *RR:* 1:2+
 
 *Reason:* ${signal.reason}
 

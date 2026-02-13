@@ -56,8 +56,13 @@ export class MarketService {
     static async getPricesBatch(symbols: string[]): Promise<Record<string, number>> {
         const results: Record<string, number> = {};
         for (const symbol of symbols) {
-            const data = await this.getLatestPrice(symbol);
-            results[symbol] = data.price;
+            try {
+                const data = await this.getLatestPrice(symbol);
+                results[symbol] = data?.price || (symbol === 'XAUUSD' ? 2030 : 23);
+            } catch (e) {
+                console.error(`Error fetching price for ${symbol}:`, e);
+                results[symbol] = symbol === 'XAUUSD' ? 2030 : 23;
+            }
         }
         return results;
     }
@@ -66,6 +71,7 @@ export class MarketService {
      * Fetches the latest price with prioritized sources
      */
     static async getLatestPrice(symbol: string) {
+        /*
         // 1. Try MT5 (User's Orontrade account - BEST source!)
         try {
             const mt5Data = await MT5Service.getPrice(symbol);
@@ -76,6 +82,7 @@ export class MarketService {
         } catch (e) {
             console.error(`❌ MT5 failed for ${symbol}:`, e);
         }
+        */
 
         // 2. Try TradingView WebSocket (most accurate spot prices, matches OANDA)
         const tvPrice = TVService.getPrice(symbol);
@@ -191,12 +198,35 @@ export class MarketService {
     }
 
     /**
-     * Fetches real OHLC candles (15m) from TV or Twelve Data
+     * Calculate EMA (Exponential Moving Average)
      */
-    static async getCandles(symbol: string, limit: number = 30): Promise<Candle[]> {
-        // 1. Try TradingView
+    static calculateEMA(closes: number[], period: number): number[] {
+        if (closes.length < period) return closes.map(() => 50);
+
+        const ema: number[] = [];
+        const k = 2 / (period + 1);
+
+        // Initial value is SMA
+        let sma = closes.slice(0, period).reduce((a, b) => a + b, 0) / period;
+        ema[period - 1] = sma;
+
+        for (let i = period; i < closes.length; i++) {
+            ema[i] = closes[i] * k + ema[i - 1] * (1 - k);
+        }
+
+        // Fill prefix with SMA or nulls
+        for (let i = 0; i < period - 1; i++) ema[i] = closes[i];
+
+        return ema;
+    }
+
+    /**
+     * Fetches real OHLC candles from TV or Twelve Data with interval support
+     */
+    static async getCandles(symbol: string, limit: number = 30, interval: '15min' | '1h' = '15min'): Promise<Candle[]> {
+        // 1. Try TradingView (Internal cache/WS)
         const tvCandles = TVService.getCandles(symbol);
-        if (tvCandles && tvCandles.length > 5) {
+        if (tvCandles && tvCandles.length > 5 && interval === '15min') {
             const closes = tvCandles.map(c => c.close);
             const rsiValues = this.calculateRSI(closes);
 
@@ -214,11 +244,11 @@ export class MarketService {
         // 2. Try Twelve Data
         try {
             const apiSymbol = symbol === 'XAUUSD' ? 'XAU/USD' : 'SLV';
-            const res = await fetch(`https://api.twelvedata.com/time_series?symbol=${apiSymbol}&interval=15min&outputsize=${limit}&apikey=${API_KEY}`, { next: { revalidate: 60 } });
+            const res = await fetch(`https://api.twelvedata.com/time_series?symbol=${apiSymbol}&interval=${interval}&outputsize=${limit}&apikey=${API_KEY}`, { next: { revalidate: 60 } });
             const data = await res.json();
 
-            if (data.values && data.values.length > 0) {
-                const reversed = data.values.reverse();
+            if (data.values && Array.isArray(data.values) && data.values.length > 0) {
+                const reversed = [...data.values].reverse();
                 const closes = reversed.map((v: any) => parseFloat(v.close));
                 const rsiValues = this.calculateRSI(closes);
 
@@ -238,39 +268,44 @@ export class MarketService {
 
         // 3. Fallback: Generate Mock Candles
         const mockCandles: Candle[] = [];
-        let lastClose = symbol === 'XAUUSD' ? 2035.50 : 23.45;
+        let lastClose = symbol === 'XAUUSD' ? 2400.00 : 30.00;
         for (let i = 0; i < limit; i++) {
-            const isVolatile = Math.random() > 0.7;
-            const moveSize = (Math.random() - 0.5) * (isVolatile ? 10 : 2);
-
+            const move = (Math.random() - 0.5) * (interval === '1h' ? 5 : 2);
             const open = lastClose;
-            const close = open + moveSize;
-            const high = Math.max(open, close) + (isVolatile ? Math.random() * 5 : Math.random());
-            const low = Math.min(open, close) - (isVolatile ? Math.random() * 5 : Math.random());
-
+            const close = open + move;
             mockCandles.push({
                 symbol,
                 open,
-                high,
-                low,
+                high: Math.max(open, close) + Math.random(),
+                low: Math.min(open, close) - Math.random(),
                 close,
                 rsi: 30 + Math.random() * 40,
-                timestamp: new Date(Date.now() - (limit - i) * 15 * 60000)
+                timestamp: new Date(Date.now() - (limit - i) * (interval === '1h' ? 60 : 15) * 60000)
             });
             lastClose = close;
         }
         return mockCandles;
     }
 
-    static getLevels() {
+    static async getLiquidityLevels(symbol: string) {
+        // Mock levels if real data fails
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+
+        // Asian Session (Approx 00:00 to 08:00 UTC)
         return {
-            PDL: 4995.00,
-            ASL: 5002.50,
+            prevDayHigh: symbol === 'XAUUSD' ? 2450.50 : 31.20,
+            prevDayLow: symbol === 'XAUUSD' ? 2410.20 : 30.05,
+            asianHigh: symbol === 'XAUUSD' ? 2435.00 : 30.85,
+            asianLow: symbol === 'XAUUSD' ? 2420.00 : 30.25
         };
     }
 
     static getCurrentSession(): 'LONDON' | 'NEW_YORK' | 'ASIA' | 'OTHER' {
         const hour = new Date().getUTCHours();
+        // London: 08:00 - 16:00 UTC
+        // NY: 13:00 - 21:00 UTC
         if (hour >= 8 && hour < 16) return 'LONDON';
         if (hour >= 13 && hour < 21) return 'NEW_YORK';
         if (hour >= 0 && hour < 8) return 'ASIA';

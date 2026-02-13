@@ -66,7 +66,17 @@
       "tp": 2410.5,
       "sl": 2449.5,
       "timestamp": "2026-02-03T17:09:21.373Z"
+    },
+    {
+      "symbol": "XAUUSD",
+      "type": "SELL",
+      "price": 2439.5,
+      "time": "8:02:56 pm",
+      "reason": "DIAGNOSTIC SIGNAL: Testing Telegram connectivity (FORCED)",
+      "tp": 2410.5,
+      "sl": 2449.5,
+      "timestamp": "2026-02-13T14:32:58.514Z"
     }
   ],
-  "monthlyProfit": 5702.704017680395
+  "monthlyProfit": 5772.119416073995
 }

@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import styles from './dashboard.module.css';
+import TradingViewChart from '@/components/TradingViewChart';
+import TradingViewSymbolInfo from '@/components/TradingViewSymbolInfo';
 
 interface Signal {
     symbol: string;
@@ -168,16 +170,6 @@ function DashboardContent() {
                     <h1>Market Dashboard</h1>
                     <p>Welcome back, Vijay Savani</p>
                 </div>
-                <div className={styles.livePrices}>
-                    <div className={`${styles.priceCard} glass`}>
-                        <span>XAUUSD (Gold)</span>
-                        <span className={styles.priceValue}>${prices.XAUUSD.toFixed(2)}</span>
-                    </div>
-                    <div className={`${styles.priceCard} glass`}>
-                        <span>XAGUSD (Silver)</span>
-                        <span className={styles.priceValue}>${prices.XAGUSD.toFixed(2)}</span>
-                    </div>
-                </div>
             </header>
 
             <section className={styles.analyticsSection}>
@@ -210,6 +202,23 @@ function DashboardContent() {
                         <span className={styles.analyticLabel}>Avg. Risk/Reward</span>
                         <span className={styles.analyticValue}>1:3.2</span>
                         <span className={styles.analyticSub}>Optimized for Growth</span>
+                    </div>
+                </div>
+            </section>
+
+            <section className={styles.chartSection}>
+                <div className="container" style={{ marginBottom: '2rem' }}>
+                    <div className="glass" style={{ padding: '2.5rem', borderRadius: '32px' }}>
+                        <div style={{ marginBottom: '2.5rem' }}>
+                            <h2 style={{ marginBottom: '1.5rem', color: '#fff', fontSize: '1.5rem', fontWeight: '800' }}>Market Analysis</h2>
+                            <div style={{ minHeight: '180px', background: 'rgba(255,255,255,0.01)', borderRadius: '16px', padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <TradingViewSymbolInfo />
+                            </div>
+                        </div>
+                        <div style={{ marginTop: '2.5rem' }}>
+                            <h3 style={{ marginBottom: '1rem', color: 'var(--text-muted)', fontSize: '1rem', fontWeight: '600' }}>Live XAUUSD Chart</h3>
+                            <TradingViewChart />
+                        </div>
                     </div>
                 </div>
             </section>

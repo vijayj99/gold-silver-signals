@@ -24,8 +24,9 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 1.4rem;
-    font-weight: 800;
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: -1px;
 }
 
 .goldText {
@@ -208,26 +209,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 3rem;
-}
-
-.livePrices {
-    display: flex;
-    gap: 1.5rem;
-}
-
-.priceCard {
-    padding: 1rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    min-width: 180px;
-}
-
-.priceValue {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--primary);
+    margin-bottom: 2.5rem;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 2.5rem;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .chartSection {
@@ -476,12 +464,9 @@
         gap: 2rem;
     }
 
-    .livePrices {
+    .symbolInfoWrapper {
         width: 100%;
-    }
-
-    .priceCard {
-        flex: 1;
+        max-width: 100%;
     }
 }
 
